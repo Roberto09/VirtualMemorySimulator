@@ -2,13 +2,13 @@
 // Created by Diego Alejandro Villarreal López on 26/11/19.
 //
 
-#ifndef VIRTUALMEMORYSIMULATOR_PAGES_H
-#define VIRTUALMEMORYSIMULATOR_PAGES_H
+#ifndef VIRTUALMEMORYSIMULATOR_PAGE_H
+#define VIRTUALMEMORYSIMULATOR_PAGE_H
 
 
-class Pages {
+class Page {
 public:
-    Pages();
+    Page();
     Page(int idProcess, int pageNumber);
     int getIDProcess();
     int getPageNumber();
@@ -19,4 +19,4 @@ private:
 };
 
 
-#endif //VIRTUALMEMORYSIMULATOR_PAGES_H
+#endif //VIRTUALMEMORYSIMULATOR_PAGE_H
