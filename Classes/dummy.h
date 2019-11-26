@@ -7,7 +7,7 @@
 
 
 class dummy {
-
+    int funcion(int x);
 };
 
 
