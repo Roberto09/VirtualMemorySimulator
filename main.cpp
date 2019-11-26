@@ -46,7 +46,6 @@ struct Instruction{
             data.pb(stol(parseString.substr(iPos, niPos)));
             iPos = niPos+1;
         }
-
         if(iPos < parseString.length()) comment = parseString.substr(iPos);
     }
 };
