@@ -3,4 +3,4 @@ project(VirtualMemorySimulator)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(VirtualMemorySimulator main.cpp)
+add_executable(VirtualMemorySimulator main.cpp Classes/dummy.cpp Classes/dummy.h)
