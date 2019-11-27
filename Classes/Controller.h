@@ -1,0 +1,14 @@
+//
+// Created by rober on 26/11/2019.
+//
+
+#ifndef VIRTUALMEMORYSIMULATOR_CONTROLLER_H
+#define VIRTUALMEMORYSIMULATOR_CONTROLLER_H
+
+
+class Controller {
+
+};
+
+
+#endif //VIRTUALMEMORYSIMULATOR_CONTROLLER_H
