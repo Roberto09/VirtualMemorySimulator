@@ -12,6 +12,7 @@ Page ::Page(int idProcess, int pageNumber) {
     this->pageNumber = pageNumber;
 }
 
+//Gets y sets
 int Page::getIDProcess() {
     return idProcess;
 }
