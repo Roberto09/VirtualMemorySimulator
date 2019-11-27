@@ -15,9 +15,9 @@ private:
 public:
     PaginationTable();
     int getRealPosition(Page &page);
-    int addRealPosition(Page &page, int position);
+    void addRealPosition(Page &page, int position);
     int getSecondaryPosition(Page &page);
-    int addSecondaryPosition(Page &page, int position);
+    void addSecondaryPosition(Page &page, int position);
     bool isInRealMemory(Page &page);
     void removeProcess(int pId);
 };

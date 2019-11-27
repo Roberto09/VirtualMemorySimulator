@@ -3,8 +3,6 @@
 //
 
 #include "RealMemory.h"
-#include "Page.cpp"
-#include "PaginationTable.cpp"
 using namespace std;
 //Constructor
 RealMemory::RealMemory() {};
