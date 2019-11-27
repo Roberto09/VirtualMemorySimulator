@@ -8,6 +8,8 @@
 #include "Page.h"
 #include <vector>
 #include <utility>
+#include "PaginationTable.cpp"
+
 
 using namespace std;
 
@@ -15,9 +17,8 @@ const int len = 128;
 class RealMemory {
 public:
     RealMemory();
-    bool Insert(int idPage, int page);
-    void Erase(int page);
-
+    bool insert(Page page, PaginationTable &paginationTable);
+    void erase(Page page, PaginationTable &paginationTable);
 
 private:
     pair<bool,Page> m[len];
