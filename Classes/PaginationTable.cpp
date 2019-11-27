@@ -4,7 +4,7 @@
 
 #include "PaginationTable.h"
 
-int PaginationTable::addRealPosition(Page &page, int position) {
+void PaginationTable::addRealPosition(Page &page, int position) {
     table[page.getIDProcess()][page.getPageNumber()] = {true, position};
 }
 
@@ -12,7 +12,7 @@ int PaginationTable::getRealPosition(Page &page) {
     return table[page.getIDProcess()][page.getPageNumber()].second;
 }
 
-int PaginationTable::addSecondaryPosition(Page &page, int position) {
+void PaginationTable::addSecondaryPosition(Page &page, int position) {
     table[page.getIDProcess()][page.getPageNumber()] = {false, position};
 }
 

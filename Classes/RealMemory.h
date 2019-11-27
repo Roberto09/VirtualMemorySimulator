@@ -6,9 +6,9 @@
 #define VIRTUALMEMORYSIMULATOR_REALMEMORY_H
 
 #include "Page.h"
+#include "PaginationTable.h"
 #include <vector>
 #include <utility>
-#include "PaginationTable.cpp"
 
 
 using namespace std;
