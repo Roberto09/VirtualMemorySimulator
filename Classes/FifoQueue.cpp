@@ -10,11 +10,11 @@ FifoQueue::FifoQueue() {
     this ->queuePages = vector <Page>();
 }
 
-Page FifoQueue::front(int number) {
+Page FifoQueue::front(int pId) {
     Page answer;
     int i;
     for(i = 0; i < queuePages.size(); i++){
-       if (queuePages.at(i).getIDProcess() != number){
+       if (queuePages.at(i).getIDProcess() != pId){
            answer = queuePages[i];
            break;
        }

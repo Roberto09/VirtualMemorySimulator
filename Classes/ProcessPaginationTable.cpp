@@ -8,8 +8,8 @@ ProcessPaginationTable::ProcessPaginationTable() {
     table = unordered_map<int, Process>();
 }
 
-void ProcessPaginationTable::createProcess(int pId, double timeStamp) {
-    table[pId] = Process(timeStamp);
+void ProcessPaginationTable::createProcess(int pId, int bytes, int pages, double timeStamp) {
+    table[pId] = Process(bytes, pages, timeStamp);
 }
 
 void ProcessPaginationTable::addRealPosition(Page &page, int position) {

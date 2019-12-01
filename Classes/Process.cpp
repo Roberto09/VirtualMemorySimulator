@@ -6,7 +6,9 @@
 
 Process::Process() {}
 
-Process::Process(double initTimestamp) {
+Process::Process(int bytes, int pages, double initTimestamp) {
+    this->bytes = bytes;
+    this->pages = pages;
     this->initTimestamp = initTimestamp;
 }
 

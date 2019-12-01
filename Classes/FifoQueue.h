@@ -17,7 +17,7 @@ public:
     void insert(Page page);
 
 private:
-vector <Page> queuePages;
+    vector <Page> queuePages;
 };
 
 

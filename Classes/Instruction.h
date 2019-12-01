@@ -18,6 +18,9 @@ private:
 public:
     Instruction();
     Instruction(string &parseString);
+    char getType();
+    vector<int>& getData();
+    string& getComment();
 };
 
 #endif //VIRTUALMEMORYSIMULATOR_INSTRUCTION_H

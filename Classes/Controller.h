@@ -13,6 +13,7 @@
 using namespace std;
 
 const double d_load_page_memory = 1.0, d_swap_in = 1.0, d_swap_out = 1.0;
+const int page_size = 16;
 
 class Controller {
 public:
@@ -30,12 +31,12 @@ private:
     double currentTime;
     int totalSwapOperations;
 
-    double addProcess();
-    double searchProcessPage();
-    double eliminateProcess();
-    double endProcessGroup();
-    double comment();
-    double exitProgram();
+    void addProcess(int pId, int bytes, int totalPages);
+    void searchProcessPage();
+    void eliminateProcess();
+    void endProcessGroup();
+    void comment();
+    void exitProgram();
 };
 
 

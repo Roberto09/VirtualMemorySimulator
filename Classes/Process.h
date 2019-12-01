@@ -14,9 +14,11 @@ class Process {
 private:
     unordered_map<int, pair<bool, int>> paginationTable;
     double initTimestamp;
+    int bytes;
+    int pages;
 public:
     Process();
-    Process(double initTimestamp);
+    Process(int bytes, int pages, double initTimestamp);
     unordered_map<int, pair<bool, int>>& getPaginationTable();
     double getInitTimeStamp();
 };

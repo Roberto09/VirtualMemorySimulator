@@ -19,3 +19,16 @@ Instruction::Instruction(string &parseString) {
 
     if(iPos < parseString.length()) this->comment = parseString.substr(iPos);
 }
+
+
+char Instruction::getType() {
+    return this->type;
+}
+
+vector<int>& Instruction::getData() {
+    return this->data;
+}
+
+string& Instruction::getComment() {
+    return this->comment;
+}
