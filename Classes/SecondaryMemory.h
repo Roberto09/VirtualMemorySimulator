@@ -7,14 +7,14 @@
 #include "Page.h"
 #include <vector>
 #include <utility>
-#include "PaginationTable.h"
+#include "ProcessPaginationTable.h"
 using namespace std;
 
 const int len = 256;
 class SecondaryMemory {
     public:
         SecondaryMemory();
-        void insert(Page page, PaginationTable &paginationTable);
+        void insert(Page page, ProcessPaginationTable &paginationTable);
 
     private:
         pair<bool,Page> m[len];

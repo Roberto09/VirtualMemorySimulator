@@ -7,7 +7,7 @@ using namespace std;
 //Constructor
 RealMemory::RealMemory() {};
 
-bool RealMemory::insert(Page page, PaginationTable &paginationTable) {
+bool RealMemory::insert(Page page, ProcessPaginationTable &paginationTable) {
     for(int i=0; i<len; i++){
         if(!m[i].first){
             m[i].first= true;
@@ -19,7 +19,7 @@ bool RealMemory::insert(Page page, PaginationTable &paginationTable) {
     return false;
 }
 
-void RealMemory::erase(Page page, PaginationTable &paginationTable) {
+void RealMemory::erase(Page page, ProcessPaginationTable &paginationTable) {
     m[paginationTable.getRealPosition(page)].first = false;
 }
 

@@ -5,7 +5,7 @@
 #include "SecondaryMemory.h"
 
 SecondaryMemory::SecondaryMemory() {}
-void SecondaryMemory::insert(Page page, PaginationTable &paginationTable) {
+void SecondaryMemory::insert(Page page, ProcessPaginationTable &paginationTable) {
     for(int i=0; i<len; i++){
         if(!m[i].first){
             m[i].first = true;

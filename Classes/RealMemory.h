@@ -6,7 +6,7 @@
 #define VIRTUALMEMORYSIMULATOR_REALMEMORY_H
 
 #include "Page.h"
-#include "PaginationTable.h"
+#include "ProcessPaginationTable.h"
 #include <vector>
 #include <utility>
 
@@ -17,8 +17,8 @@ const int len = 128;
 class RealMemory {
 public:
     RealMemory();
-    bool insert(Page page, PaginationTable &paginationTable);
-    void erase(Page page, PaginationTable &paginationTable);
+    bool insert(Page page, ProcessPaginationTable &paginationTable);
+    void erase(Page page, ProcessPaginationTable &paginationTable);
 
 private:
     pair<bool,Page> m[len];
