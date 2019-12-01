@@ -10,14 +10,14 @@
 #include "ProcessPaginationTable.h"
 using namespace std;
 
-const int len = 256;
+const int total_frames = 256;
 class SecondaryMemory {
     public:
         SecondaryMemory();
         void insert(Page page, ProcessPaginationTable &paginationTable);
 
     private:
-        pair<bool,Page> m[len];
+        pair<bool,Page> m[total_frames];
 };
 
 

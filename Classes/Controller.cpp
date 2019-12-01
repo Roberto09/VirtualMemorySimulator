@@ -5,6 +5,10 @@
 #include <cmath>
 #include "Controller.h"
 
+/*
+ * Simple constructor for the controller
+ */
+
 Controller::Controller() {
     this->rm = RealMemory();
     this->sm = SecondaryMemory();
@@ -13,6 +17,21 @@ Controller::Controller() {
     this->totalSwapOperations = 0;
 }
 
+/*
+ * Swap method that swaps a page from real memory to secondary memory
+ */
+void Controller::swap(int pId) {
+    // remove page from real memory that doesn't belong to the current process
+    Page swapPage = queue.front(pId);
+    // add such page to secondary memory
+    sm.insert(swapPage, ppt);
+}
+
+/*
+ * Add proccess method that adds an entire process to real memory given the process id, the bytes it occupies and the
+ * total number of needed pages. If the process can't be added directly to secondary memory then a swap is triggered
+ * to secondary memory
+ */
 void Controller::addProcess(int pId, int bytes, int totalPages) {
     // create simple process
     this->ppt.createProcess(pId, bytes, totalPages, this->currentTime);
@@ -23,14 +42,17 @@ void Controller::addProcess(int pId, int bytes, int totalPages) {
         bool realMemoryInsertionResult = this->rm.insert(currPage, this->ppt);
         if(!realMemoryInsertionResult){// there's not enough space in real memory
             // we should swap a page to secondary memory
-            Page swapPage = queue.front(pId);
-            sm.insert(swapPage, ppt);
+            swap(pId);
             // we insert page again now that there's enough space
             this->rm.insert(currPage, this->ppt);
         }
     }
 }
 
+/*
+ * Simple public process delegator which simply identifies the type of instruction given and triggers the corresponding
+ * method.
+ */
 string Controller::processInstruction(Instruction &instruction) {
     switch(instruction.getType()){
         case 'P': // Initial creation of a process
@@ -42,14 +64,6 @@ string Controller::processInstruction(Instruction &instruction) {
 
             // add the process
             addProcess(pId, bytes, totalPages);
-            break;
-        case 'b':
-            break;
-        case 'c':
-            break;
-        case 'd':
-            break;
-        case 'e':
             break;
     }
 }

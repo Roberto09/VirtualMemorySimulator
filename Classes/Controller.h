@@ -32,6 +32,7 @@ private:
     int totalSwapOperations;
 
     void addProcess(int pId, int bytes, int totalPages);
+    void swap(int pId);
     void searchProcessPage();
     void eliminateProcess();
     void endProcessGroup();
