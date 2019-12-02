@@ -14,8 +14,16 @@ void parseData(){
     //read data
     string dataS;
     while(getline(inputFile, dataS)){
-        //cout << dataS << etr;
+//        cout << dataS << endl;
         Instruction currInstruction(dataS);
+        if (currInstruction.getType() == 'E')
+        {
+            return;
+        }
+        else
+        {
+            // Flag Call the controller processinstruction functino.
+        }
     }
 
     inputFile.close();
