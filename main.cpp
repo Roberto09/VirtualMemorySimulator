@@ -9,8 +9,10 @@ const string nombreArch = "input.txt";
 
 
 void parseData(){
-    Controller myControllerFifo(true);
-    //Controller myControllerLru(false);
+    FifoQueue fifoQueue;
+    Controller myControllerFifo(&fifoQueue);
+    LRUQueue lruQueue;
+    Controller myControllerLru(&lruQueue);
     ifstream inputFile;
     inputFile.open(nombreArch);
 
@@ -24,8 +26,9 @@ void parseData(){
         }
         else{
             // Call the controller's processInstruction function in order to process every instruction and perform necessary actions..
-            //cout << myControllerLru.processInstruction(currInstruction)<< " LRU" << endl;
-            cout << myControllerFifo.processInstruction(currInstruction)<< " Fifo" << endl;
+            cout << "INPUT: " << dataS << endl;
+            //cout << myControllerFifo.processInstruction(currInstruction)<< " Fifo" << endl << endl << endl;
+            cout << myControllerLru.processInstruction(currInstruction)<< " LRU" << endl << endl << endl;
         }
     }
 
@@ -34,6 +37,5 @@ void parseData(){
 
 int main(){
     parseData();
-    cout<<"Si build jejeje xd"<<endl;
     return 0;
 }

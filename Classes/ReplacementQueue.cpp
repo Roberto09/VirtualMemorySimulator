@@ -34,7 +34,7 @@ void ReplacementQueue:: erase(Page page){
 void ReplacementQueue:: insert(Page page){
     queuePages.push_back(page);
 }
-void ReplacementQueue::update(Page page) {};
+void ReplacementQueue::update(Page page) {}
 
 void ReplacementQueue:: reset(){
     this ->queuePages = vector <Page>();

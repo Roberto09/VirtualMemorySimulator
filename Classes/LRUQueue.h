@@ -7,7 +7,6 @@
 #include "ReplacementQueue.h"
 using namespace std;
 class LRUQueue: public ReplacementQueue {
-
 public:
     void update(Page page);
 };

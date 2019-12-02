@@ -11,11 +11,11 @@ using  namespace std;
 class ReplacementQueue {
 public:
     ReplacementQueue();
-    virtual Page front(int);
-    virtual void erase(Page page);
-    virtual void insert(Page page);
+     Page front(int);
+     void erase(Page page);
+     void insert(Page page);
     virtual void update(Page page);
-    virtual void reset();
+     void reset();
 
 protected:
     vector <Page> queuePages;
