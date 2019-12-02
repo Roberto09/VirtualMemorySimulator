@@ -8,14 +8,21 @@
 /*
  * Simple constructor for the controller
  */
-
-Controller::Controller() {
+//If b is true it is fifo, else it is LRU
+Controller::Controller(bool b) {
     this->rm = RealMemory();
     this->sm = SecondaryMemory();
     this->ppt = ProcessPaginationTable();
     this->currentTime = 0.0;
     this->totalSwapOperations = 0;
-    this->queue = FifoQueue();
+    if(b){
+        FifoQueue fq;
+        this->rq = &fq;
+    }
+    else{
+        LRUQueue lru;
+        this->rq = &lru;
+    }
 }
 
 /*
@@ -23,7 +30,7 @@ Controller::Controller() {
  */
 void Controller::swap(int pId) {
     // remove page from real memory that doesn't belong to the current process
-    Page swapPage = queue.front(pId);
+    Page swapPage = rq->front(pId);
     // add such page to secondary memory
     sm.insert(swapPage, ppt);
 }
@@ -41,7 +48,8 @@ void Controller::addToRealMemory(Page &page) {
         this->rm.insert(page, this->ppt);
     }
     // we finally add it to the queue
-    queue.insert(page);
+    rq->insert(page);
+    rq->update(page);
 }
 
 void Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRead) {
@@ -104,8 +112,7 @@ string Controller::processInstruction(Instruction &instruction) {
                 } else {
                     sm.erase(currentPage, ppt);
                 }
-                queue.erase(currentPage);
-                //Falta LRU
+                rq->erase(currentPage);
             }
             ppt.removeProcess(pId);
         }break;

@@ -6,18 +6,13 @@
 #define VIRTUALMEMORYSIMULATOR_FIFOQUEUE_H
 #include "Page.h"
 #include <vector>
+#include "ReplacementQueue.h"
 using  namespace std;
 
 
-class FifoQueue {
-public:
-    FifoQueue();
-    Page front(int);
-    void erase(Page page);
-    void insert(Page page);
 
-private:
-    vector <Page> queuePages;
+class FifoQueue: public ReplacementQueue {
+public:
 };
 
 
