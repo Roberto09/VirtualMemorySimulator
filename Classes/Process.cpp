@@ -10,15 +10,31 @@ Process::Process(int bytes, int pages, double initTimestamp) {
     this->bytes = bytes;
     this->pages = pages;
     this->initTimestamp = initTimestamp;
+    this->finishTimestamp = 0;
+    this->pageFaults = 0;
+    this->finished = false;
 }
 
-unordered_map<int, pair<bool, int>>& Process::getPaginationTable() {
-    return this->paginationTable;
-}
-
-double Process::getInitTimeStamp() {
-    return this->initTimestamp;
-}
 int Process::getPages() {
     return this->pages;
+}
+
+void Process::addPageFault(){
+    this->pageFaults ++;
+}
+
+bool Process::isFinished() {
+    return this->finished;
+}
+
+void Process::finishProcess(double currentTimestamp) {
+    this->finishTimestamp = currentTimestamp;
+}
+
+int Process::getPagesFault() {
+    return this->pageFaults;
+}
+
+double Process::getTurnAround() {
+    return this->finishTimestamp - this->initTimestamp;
 }

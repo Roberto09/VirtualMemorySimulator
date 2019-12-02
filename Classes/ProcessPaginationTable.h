@@ -12,8 +12,12 @@ using namespace std;
 
 class ProcessPaginationTable {
 private:
-    // map that maps the process id to the process itself which contains it's own pagination table
-    unordered_map<int, Process> table;
+    /*
+     * map that maps the process id (int) to it's respective pagination table where every page is represented by it's
+     * id and a pair<bool, int> where the boolean represents whether it's in real memory or not and the int represents
+     * in which frame in real or secondary memory such page is living.
+    */
+    unordered_map<int, unordered_map<int, pair<bool, int>>> table;
 public:
     ProcessPaginationTable();
     int getRealPosition(Page &page);
@@ -22,9 +26,7 @@ public:
     void addSecondaryPosition(Page &page, int position);
     bool isInRealMemory(Page &page);
     bool isInSecondaryMemory(Page &page);
-    void createProcess(int pId, int bytes, int pages, double timestamp);
     void removeProcess(int pId);
-    Process& getProcess(int pId);
 };
 
 

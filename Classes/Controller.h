@@ -19,41 +19,48 @@ const int page_size = 16;
 
 class Controller {
 public:
-    Controller(ReplacementQueue *rq); //If b is true it is fifo, else it is LRU
+    Controller(ReplacementQueue *rq);
     string processInstruction(Instruction &instruction);
 private:
-    // Real memory, secondary memory, pagination table and queue
+    /*
+     * Main variables, used to coordinate the transactions regarding the processes.
+     */
     RealMemory rm;
     SecondaryMemory sm;
     ProcessPaginationTable ppt;
     ReplacementQueue *rq;
 
-
-    // Statistic variables, used mainly to compute final statistics: turn around for each process, average turn around,
-    // total page faults and total swap-in, swap-out operations.
+    /*
+     * Statistic variables, used mainly to compute final statistics: turn around for each process, average turn around,
+     * total page faults and total swap-in, swap-out operations.
+     */
+    unordered_map<int, Process> proccessHistory;
     double currentTime;
     int totalSwapOperations;
 
+    /*
+     * Main methods used by the controller, this are the onces being called directly with the data of the instruction.
+     */
     string addProcess(int pId, int bytes, int totalPages);
+    string searchProcessPage(int virtualDirection, int pId, bool onlyRead);
+    string eraseProcess(int pId);
+    string generateEndReport();
+
+    /*
+     * Auxiliary methods used by the main methods in order to fulfill their respective tasks.
+     */
     Page swap(int pId);
     pair<int, pair<bool, Page>> addToRealMemory(Page &page);
-    string searchProcessPage(int virtualDirection, int pId, bool onlyRead);
+    void createProcess(int pId, int bytes, int totalPages, double currentTime);
+    void endProcess(int pId);
+    Process& getProcess(int pId);
+
+
     void eliminateProcess();
     void endProcessGroup();
     void comment();
     void exitProgram();
-    string eraseProcess(int pId);
-
-    string generateEndReport();
     void resetData();
-
-    double calculateTurnaroundTime();
-
-    double calculateTurnaroundAverageTime();
-
-    double calculateNumPageFaults();
-
-    double calculateNumOperations();
 };
 
 

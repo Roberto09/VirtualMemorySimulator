@@ -10,7 +10,6 @@ using namespace std;
 /*
  * Simple constructor for the controller
  */
-//If b is true it is fifo, else it is LRU
 Controller::Controller(ReplacementQueue *rq) {
     this->rm = RealMemory();
     this->sm = SecondaryMemory();
@@ -21,7 +20,8 @@ Controller::Controller(ReplacementQueue *rq) {
 }
 
 /*
- * Swap method that swaps a page from real memory to secondary memory
+ * Swap method that swaps a page from real memory to secondary memory (in order to generate space) according to the
+ * replacement queue specified in the contruction.
  */
 Page Controller::swap(int pId) {
     // remove page from real memory that doesn't belong to the current process
@@ -59,7 +59,29 @@ pair<int, pair<bool, Page>> Controller::addToRealMemory(Page &page) {
 }
 
 /*
- * Search process page, searches for a virtual direction in real memory, if it's not found then its swaped.
+ * Create Process method that creates a process in the process history for future reference for statistics.
+ */
+void Controller::createProcess(int pId, int bytes, int totalPages, double currentTime){
+    this->proccessHistory[pId] = Process(bytes, totalPages, currentTime);
+}
+
+/*
+ * Gets a process from the process history
+ */
+Process& Controller::getProcess(int pId) {
+    return this->proccessHistory[pId];
+}
+
+/*
+ * Ends a process in process history, used for future statistic references
+ */
+void Controller::endProcess(int pId) {
+    this->proccessHistory[pId].finishProcess(this->currentTime);
+}
+
+
+/*
+ * Search process page, searches for a virtual direction in real memory, if it's not found then a swap occurs.
  */
 string Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRead) {
     string output = "Obtener la direccion real correspondiente a la direccion virtual " + to_string(virtualDirection) +
@@ -108,7 +130,7 @@ string Controller::addProcess(int pId, int bytes, int totalPages) {
     vector<int> realMemoryFrames; // stores where in real memory the pages of the process ended up.
     vector<Page> swapedPages; // stores the pages that had to be swapped in order to add this process properly.
     // create simple process
-    this->ppt.createProcess(pId, bytes, totalPages, this->currentTime);
+    createProcess(pId, bytes, totalPages, this->currentTime);
     // begin transactions, start adding it to real memory
     for(int i = 0; i < totalPages; i++){
         // create page
@@ -144,48 +166,6 @@ string Controller::addProcess(int pId, int bytes, int totalPages) {
 }
 
 /*
- * Calculate the turnaround time which is the time calculated when a process is loaded until the process is terminated
- * and all of the pages (L) are freed. This can be calculated with a difference in timestamps.
- * This function will be used by the generateEndReport() function for showing the turnaround time in the output of the F input command.
- */
-double Controller::calculateTurnaroundTime() {
-    double dTurnAround = 0;
-    // Flag: Insert calculation here.
-    return dTurnAround;
-}
-
-/*
- * Calculate the turnaround AVERAGE time which is the time calculated when a process is loaded until the process is terminated
- * and all of the pages (L) are freed. This can be calculated with a difference in timestamps.
- * This function will be used by the generateEndReport() function for showing the AVERAGE turnaround time in the output of the F input command.
- */
-double Controller::calculateTurnaroundAverageTime() {
-    double dTurnAroundAvg = 0;
-    // Flag: Insert calculation here.
-    return dTurnAroundAvg;
-}
-
-/*
- * Calculate the number of page faults per process. A page fault occurs when a page frame needed is not in real memory.
- * This function will be used by the generateEndReport() function for showing the # of page faults per process.
- */
-double Controller::calculateNumPageFaults(){
-    double dPageFaults = 0;
-    // Flag: Insert calculation here.
-    return dPageFaults;
-}
-
-/*
- * Calculate The number of swap in swap out operations.
- * This function will be used by the generateEndReport() function for showing the # of page faults per process.
- */
-double Controller::calculateNumOperations() {
-    double dNumOperations = 0;
-    // Flag: Insert calculation here.
-    return dNumOperations;
-}
-
-/*
  * This method will be called by generateEndReport() in order to reset the
  * data structures previously initialized. This will allow the user to enter other inputs.
  */
@@ -204,7 +184,7 @@ void Controller::resetData()
 string Controller::eraseProcess(int pId) {
     string output = "Liberar los marcos de pagina ocupados por el proceso " + to_string(pId) + " \n";
     vector<int> realMemoryFrames, secondaryMemoryFrames;
-    Process pcs = ppt.getProcess(pId);
+    Process pcs = getProcess(pId);
     for (int i = 0; i < pcs.getPages(); i++) {
         Page currentPage(pId, i);
         if (ppt.isInRealMemory(currentPage)) {
@@ -237,8 +217,8 @@ string Controller::eraseProcess(int pId) {
         output += "] \n";
     }
 
-
-    ppt.removeProcess(pId);
+    this->ppt.removeProcess(pId);
+    endProcess(pId);
     return output;
 }
 
@@ -248,24 +228,39 @@ string Controller::eraseProcess(int pId) {
  * @return output string that will show the report of the program statistics.
  */
 string Controller::generateEndReport(){
-    string sOutput = ""; // Initialize the string that will be used for output.
-    sOutput += "F\nFin. Reporte de Salida:";
+    string output = "Reporte de Salida: \n"; // Initialize the string that will be used for output.
+    output += "Turn around de procesos: \n";
 
-    // Display the turnaround time.
-    sOutput += "\nTurnaround Time: " + to_string(calculateTurnaroundTime());
+    // Initialize average turn around value
+    double averageTurnAround = 0;
+
+    // Calculate average turn around while adding to the ouput the individual turn around of each process
+    for(auto it = proccessHistory.begin(); it != proccessHistory.end(); it++) {
+        Process &p = it->second;
+        if (!p.isFinished()) p.finishProcess(this->currentTime);
+        output += "El turn around del proceso " + to_string(it->first) + " es " + to_string(p.getTurnAround()) +
+                  " segundos \n";
+        averageTurnAround += p.getTurnAround();
+    }
+    averageTurnAround/=(double)proccessHistory.size();
+
+    // Add to output the page faults per process
+    for(auto it = proccessHistory.begin(); it != proccessHistory.end(); it++) {
+        Process &p = it->second;
+        if (!p.isFinished()) p.finishProcess(this->currentTime);
+        output += "Los page faults del proceso " + to_string(it->first) + " son " + to_string(p.getPagesFault()) +
+                  "\n";
+    }
 
     // Display the average turnaround time.
-    sOutput += "\nAverage Turnaround Time: " + to_string(calculateTurnaroundAverageTime());
-
-    // Display the number of page faults.
-    sOutput += "\nNumber of Page Faults: " + to_string(calculateNumPageFaults());
+    output += "\nAverage Turnaround Time: " + to_string(averageTurnAround) + "\n";
 
     // Display the number of swap in swap out operations.
-    sOutput += "\nNumber of Swap In Swap Out Operations: " + to_string(calculateNumOperations());
+    output += "\nNumber of Swap In Swap Out Operations: " + to_string(totalSwapOperations)  + "\n";
 
     // Reset the data structures so that new inputs are not affected by previous ones.
     resetData();
-    return sOutput;
+    return output;
 }
 
 /*
@@ -283,36 +278,32 @@ string Controller::processInstruction(Instruction &instruction) {
 
             // add the process
             return addProcess(pId, bytes, totalPages);
+        }
 
-        } break;
-
-        case 'C':{ // create process COMMENT
-            return ('C' + instruction.getComment());
-        } break;
-            // If the instruction is F, generate a report of statistics and reset the variables so that new inputs
-            // can be handled without affecting previous proceses.
-        case 'F':{// create process FIN
-
-            // Generate the report of statistics and reset the variables.
-            return "agregar metricas";//generateEndReport();
-        }break;
-
-        case 'E':{ // create process EXI
-            return ("E Muchas gracias por utilizar nuestro programa.");
-        }break;
-
-        case 'A':{ // search a page from a given process
+        case 'A':{ // Search a page from a given process
             int virtualDir = instruction.getData()[0];
             int pId = instruction.getData()[1];
             bool onlyRead = instruction.getData()[2];
             return searchProcessPage(virtualDir,pId , onlyRead);
-        }break;
+        }
 
-        case 'L': {//Frees a process in real memory and swapping
+        case 'L': { //Frees a process in real memory and swapping
             int pId = instruction.getData()[0];
             return eraseProcess(pId);
-        }break;
+        }
 
+        case 'C':{ // Create process comment
+            return instruction.getComment();
+        }
+
+        case 'F':{// End process
+            // Generate the report of statistics and reset the variables.
+            return generateEndReport();
+        }
+
+        case 'E':{ // Exit program
+            return "Muchas gracias por utilizar nuestro programa.";
+        }
     }
     return "";
 }

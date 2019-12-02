@@ -12,16 +12,28 @@ using namespace std;
 
 class Process {
 private:
-    unordered_map<int, pair<bool, int>> paginationTable;
-    double initTimestamp;
+    /*
+     * General process information variables
+     */
     int bytes;
     int pages;
+
+    /*
+     * Statistic process variables
+     */
+    double initTimestamp;
+    double finishTimestamp;
+    int pageFaults;
+    bool finished;
 public:
     Process();
     Process(int bytes, int pages, double initTimestamp);
-    unordered_map<int, pair<bool, int>>& getPaginationTable();
-    double getInitTimeStamp();
     int getPages();
+    void addPageFault();
+    bool isFinished();
+    void finishProcess(double currentTimestamp);
+    int getPagesFault();
+    double getTurnAround();
 };
 
 

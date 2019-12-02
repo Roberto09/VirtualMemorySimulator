@@ -5,27 +5,23 @@
 #include "ProcessPaginationTable.h"
 
 ProcessPaginationTable::ProcessPaginationTable() {
-    table = unordered_map<int, Process>();
-}
-
-void ProcessPaginationTable::createProcess(int pId, int bytes, int pages, double timeStamp) {
-    table[pId] = Process(bytes, pages, timeStamp);
+    table = unordered_map<int, unordered_map<int, pair<bool, int>>>();
 }
 
 void ProcessPaginationTable::addRealPosition(Page &page, int position) {
-    table[page.getIDProcess()].getPaginationTable()[page.getPageNumber()] = {true, position};
+    table[page.getIDProcess()][page.getPageNumber()] = {true, position};
 }
 
 int ProcessPaginationTable::getRealPosition(Page &page) {
-    return table[page.getIDProcess()].getPaginationTable()[page.getPageNumber()].second;
+    return table[page.getIDProcess()][page.getPageNumber()].second;
 }
 
 void ProcessPaginationTable::addSecondaryPosition(Page &page, int position) {
-    table[page.getIDProcess()].getPaginationTable()[page.getPageNumber()] = {false, position};
+    table[page.getIDProcess()][page.getPageNumber()] = {false, position};
 }
 
 int ProcessPaginationTable::getSecondaryPosition(Page &page) {
-    return table[page.getIDProcess()].getPaginationTable()[page.getPageNumber()].second;
+    return table[page.getIDProcess()][page.getPageNumber()].second;
 }
 
 void ProcessPaginationTable::removeProcess(int pId) {
@@ -33,13 +29,9 @@ void ProcessPaginationTable::removeProcess(int pId) {
 }
 
 bool ProcessPaginationTable::isInRealMemory(Page &page) {
-    return table[page.getIDProcess()].getPaginationTable()[page.getPageNumber()].first;
+    return table[page.getIDProcess()][page.getPageNumber()].first;
 }
 
 bool ProcessPaginationTable::isInSecondaryMemory(Page &page) {
-    return !table[page.getIDProcess()].getPaginationTable()[page.getPageNumber()].first;
-}
-
-Process& ProcessPaginationTable::getProcess(int pId) {
-    return table[pId];
+    return !table[page.getIDProcess()][page.getPageNumber()].first;
 }
