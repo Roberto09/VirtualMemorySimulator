@@ -15,6 +15,7 @@ public:
     virtual void erase(Page page);
     virtual void insert(Page page);
     virtual void update(Page page);
+    virtual void reset();
 
 protected:
     vector <Page> queuePages;

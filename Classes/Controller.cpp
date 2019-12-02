@@ -134,9 +134,9 @@ void Controller::resetData()
     this->rm = RealMemory();
     this->sm = SecondaryMemory();
     this->ppt = ProcessPaginationTable();
-    this->queue = FifoQueue();
     this->currentTime = 0.0;
     this->totalSwapOperations = 0;
+    this->rq->reset();
 
 }
 
