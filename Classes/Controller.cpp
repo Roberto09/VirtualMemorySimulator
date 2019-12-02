@@ -28,7 +28,31 @@ void Controller::swap(int pId) {
 }
 
 /*
- * Add proccess method that adds an entire process to real memory given the process id, the bytes it occupies and the
+ * Add to real memory method that tries to add a page to real memory and if it's not possible then it makes a swap
+ * and then adds it.
+ */
+void Controller::addToRealMemory(Page &page) {
+    bool realMemoryInsertionResult = this->rm.insert(page, this->ppt);
+    if(!realMemoryInsertionResult){// there's not enough space in real memory
+        // we should swap a page to secondary memory
+        swap(page.getIDProcess());
+        // we insert page again now that there's enough space
+        this->rm.insert(page, this->ppt);
+    }
+}
+
+void Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRead) {
+    // create page
+    int pageNumber = virtualDirection / page_size;
+    Page page(pId, pageNumber);
+    // check if page is in secondary memory
+    if(this->ppt.isInSecondaryMemory(page)){
+        addToRealMemory(page);
+    }
+}
+
+/*
+ * Add process method that adds an entire process to real memory given the process id, the bytes it occupies and the
  * total number of needed pages. If the process can't be added directly to secondary memory then a swap is triggered
  * to secondary memory
  */
@@ -39,13 +63,8 @@ void Controller::addProcess(int pId, int bytes, int totalPages) {
     for(int i = 0; i < totalPages; i++){
         // create page
         Page currPage(pId, i);
-        bool realMemoryInsertionResult = this->rm.insert(currPage, this->ppt);
-        if(!realMemoryInsertionResult){// there's not enough space in real memory
-            // we should swap a page to secondary memory
-            swap(pId);
-            // we insert page again now that there's enough space
-            this->rm.insert(currPage, this->ppt);
-        }
+        // add page to real memory
+        addToRealMemory(currPage);
     }
 }
 
@@ -54,16 +73,24 @@ void Controller::addProcess(int pId, int bytes, int totalPages) {
  * method.
  */
 string Controller::processInstruction(Instruction &instruction) {
+
     switch(instruction.getType()){
-        case 'P': // Initial creation of a process
+        case 'P': { // initial creation of a process
             int bytes = instruction.getData()[0];
             int pId = instruction.getData()[1];
 
             // calculate total pages needed
-            int totalPages = ceil((double)bytes/page_size);
+            int totalPages = ceil((double) bytes / page_size);
 
             // add the process
             addProcess(pId, bytes, totalPages);
-            break;
+        }break;
+        case 'A':{ // search a page from a given process
+            int virtualDir = instruction.getData()[0];
+            int pId = instruction.getData()[1];
+            bool onlyRead = instruction.getData()[2];
+            searchProcessPage(virtualDir,pId , onlyRead);
+        }break;
     }
+    return "";
 }
