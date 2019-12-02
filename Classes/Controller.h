@@ -8,7 +8,9 @@
 #include "Instruction.h"
 #include "RealMemory.h"
 #include "SecondaryMemory.h"
+#include "ReplacementQueue.h"
 #include "FifoQueue.h"
+#include "LRUQueue.h"
 
 using namespace std;
 
@@ -17,14 +19,15 @@ const int page_size = 16;
 
 class Controller {
 public:
-    Controller();
+    Controller(bool b); //If b is true it is fifo, else it is LRU
     string processInstruction(Instruction &instruction);
 private:
     // Real memory, secondary memory, pagination table and queue
     RealMemory rm;
     SecondaryMemory sm;
     ProcessPaginationTable ppt;
-    FifoQueue queue;
+    ReplacementQueue *rq;
+
 
     // Statistic variables, used mainly to compute final statistics: turn around for each process, average turn around,
     // total page faults and total swap-in, swap-out operations.
