@@ -165,7 +165,6 @@ string Controller::generateEndReport()
  * method.
  */
 string Controller::processInstruction(Instruction &instruction) {
-
     switch(instruction.getType()) {
         case 'P': { // Initial creation of a process
             int bytes = instruction.getData()[0];
@@ -178,30 +177,30 @@ string Controller::processInstruction(Instruction &instruction) {
             addProcess(pId, bytes, totalPages);
             // Flag: need to add return statement for the output.
             return "P";
-        }
-        // If the instruction is a comment print the comment.
-        case 'C': // create process COMMENT
-        {
+        } break;
+
+        case 'C':{ // create process COMMENT
             return ('C' + instruction.getComment());
-        }
+        } break;
         // If the instruction is F, generate a report of statistics and reset the variables so that new inputs
         // can be handled without affecting previous proceses.
-        case 'F': // create process FIN
-        {
+        case 'F':{// create process FIN
+
             // Generate the report of statistics and reset the variables.
             return generateEndReport();
-        }
-        // If the instruction is E end the program and exit the execution.
-        case 'E': // create process EXIT
-        {
+        }break;
+
+        case 'E':{ // create process EXI
             return ("E Muchas gracias por utilizar nuestro programa.");
         }break;
+
         case 'A':{ // search a page from a given process
             int virtualDir = instruction.getData()[0];
             int pId = instruction.getData()[1];
             bool onlyRead = instruction.getData()[2];
             searchProcessPage(virtualDir,pId , onlyRead);
         }break;
+
         case 'L': {//Frees a process in real memory and swapping
             int pId = instruction.getData()[0];
             Process pcs = ppt.getProcess(pId);
