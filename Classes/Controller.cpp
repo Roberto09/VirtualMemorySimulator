@@ -40,6 +40,8 @@ void Controller::addToRealMemory(Page &page) {
         // we insert page again now that there's enough space
         this->rm.insert(page, this->ppt);
     }
+    // we finally add it to the queue
+    queue.insert(page);
 }
 
 void Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRead) {
