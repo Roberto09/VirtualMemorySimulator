@@ -14,7 +14,8 @@
 
 using namespace std;
 
-const double d_load_page_memory = 1.0, d_swap_in = 1.0, d_swap_out = 1.0;
+const double d_load_page_memory_initially = 1.0, d_swap = 1.0, d_access_page_in_real_memory = 0.1,
+d_free_page_real_memory = 0.1, d_free_page_secondary_memory = 0.1;
 const int page_size = 16;
 
 class Controller {
@@ -54,12 +55,6 @@ private:
     void createProcess(int pId, int bytes, int totalPages, double currentTime);
     void endProcess(int pId);
     Process& getProcess(int pId);
-
-
-    void eliminateProcess();
-    void endProcessGroup();
-    void comment();
-    void exitProgram();
     void resetData();
 };
 

@@ -29,6 +29,8 @@ Page Controller::swap(int pId) {
     // add such page to secondary memory
     rm.erase(swapPage, ppt);
     sm.insert(swapPage, ppt);
+    // add swap from real memory to secondary memory
+    currentTime += d_swap;
     return swapPage;
 }
 
@@ -79,7 +81,6 @@ void Controller::endProcess(int pId) {
     this->proccessHistory[pId].finishProcess(this->currentTime);
 }
 
-
 /*
  * Search process page, searches for a virtual direction in real memory, if it's not found then a swap occurs.
  */
@@ -101,18 +102,24 @@ string Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRea
         // now we add it to real memory
         pair<int, pair<bool, Page>> result = addToRealMemory(page);
 
+        // add to current time the time it takes to swap a page from secondary to real memory
+        currentTime += d_swap;
+
         // if we had to swap something from real memory to secondary memory we add it to the output
         if (result.second.first) {
             Page swappedPage = result.second.second;
             output += "Pagina " + to_string(swappedPage.getPageNumber()) + " swappeada al marco " +
                       to_string(ppt.getSecondaryPosition(swappedPage)) + "del area de swappping \n";
         }
-
         // we add to the output the real memory direction where the page ended up at
         output += "Se cargo la pagina: " + to_string(page.getPageNumber()) + " del proceso " +
                   to_string(page.getIDProcess()) + " a el marco " + to_string(ppt.getRealPosition(page)) +
                   " de memoria real \n";
     }
+
+    // add to current time the time it takes to check a page in real memory
+    currentTime += d_access_page_in_real_memory;
+
     rq->update(page);
     // we add to the output the real direction where our information is now at in real memory
     output += "Direccion virtual: " + to_string(virtualDirection) + ". Direccion Real: " +
@@ -133,6 +140,8 @@ string Controller::addProcess(int pId, int bytes, int totalPages) {
     createProcess(pId, bytes, totalPages, this->currentTime);
     // begin transactions, start adding it to real memory
     for(int i = 0; i < totalPages; i++){
+        // add time of adding initial page to memory
+        currentTime += d_load_page_memory_initially;
         // create page
         Page currPage(pId, i);
         // add page to real memory and save the frame where it was added to output it later
@@ -181,6 +190,9 @@ void Controller::resetData()
 
 }
 
+/*
+ * Erase process method that simlply erases a process and marks it as finished
+ */
 string Controller::eraseProcess(int pId) {
     string output = "Liberar los marcos de pagina ocupados por el proceso " + to_string(pId) + " \n";
     vector<int> realMemoryFrames, secondaryMemoryFrames;
@@ -190,9 +202,13 @@ string Controller::eraseProcess(int pId) {
         if (ppt.isInRealMemory(currentPage)) {
             realMemoryFrames.push_back(ppt.getRealPosition(currentPage));
             rm.erase(currentPage, ppt);
+            //add to the current time the time it takes to remove a page from real memory
+            currentTime += d_free_page_real_memory;
         } else {
             secondaryMemoryFrames.push_back(ppt.getSecondaryPosition(currentPage));
             sm.erase(currentPage, ppt);
+            //add to the current time the time it takes to remove a page from secondary memory
+            currentTime += d_free_page_secondary_memory;
         }
         rq->erase(currentPage);
     }
@@ -275,8 +291,6 @@ string Controller::processInstruction(Instruction &instruction) {
 
             // calculate total pages needed
             int totalPages = ceil((double) bytes / page_size);
-
-            // add the process
             return addProcess(pId, bytes, totalPages);
         }
 
@@ -297,7 +311,6 @@ string Controller::processInstruction(Instruction &instruction) {
         }
 
         case 'F':{// End process
-            // Generate the report of statistics and reset the variables.
             return generateEndReport();
         }
 
