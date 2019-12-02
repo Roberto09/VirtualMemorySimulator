@@ -15,6 +15,7 @@ class SecondaryMemory {
     public:
         SecondaryMemory();
         void insert(Page page, ProcessPaginationTable &paginationTable);
+        void erase(Page page, ProcessPaginationTable &paginationTable);
 
     private:
         pair<bool,Page> m[total_frames];

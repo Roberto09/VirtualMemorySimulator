@@ -15,6 +15,7 @@ Controller::Controller() {
     this->ppt = ProcessPaginationTable();
     this->currentTime = 0.0;
     this->totalSwapOperations = 0;
+    this->queue = FifoQueue();
 }
 
 /*
@@ -54,16 +55,32 @@ void Controller::addProcess(int pId, int bytes, int totalPages) {
  * method.
  */
 string Controller::processInstruction(Instruction &instruction) {
-    switch(instruction.getType()){
-        case 'P': // Initial creation of a process
+    switch(instruction.getType()) {
+        case 'P': { // Initial creation of a process
             int bytes = instruction.getData()[0];
             int pId = instruction.getData()[1];
 
             // calculate total pages needed
-            int totalPages = ceil((double)bytes/page_size);
+            int totalPages = ceil((double) bytes / page_size);
 
             // add the process
             addProcess(pId, bytes, totalPages);
             break;
+        }
+        case 'L': {//Frees a process in real memory and swapping
+            int pId = instruction.getData()[0];
+            Process pcs = ppt.getProcess(pId);
+            for (int i = 0; i < pcs.getPages(); i++) {
+                Page currentPage(pId, i);
+                if (ppt.isInRealMemory(currentPage)) {
+                    rm.erase(currentPage, ppt);
+                } else {
+                    sm.erase(currentPage, ppt);
+                }
+                queue.erase(currentPage);
+                //Falta LRU
+            }
+            ppt.removeProcess(pId);
+        }
     }
 }

@@ -19,3 +19,6 @@ unordered_map<int, pair<bool, int>>& Process::getPaginationTable() {
 double Process::getInitTimeStamp() {
     return this->initTimestamp;
 }
+int Process::getPages() {
+    return this->pages;
+}
