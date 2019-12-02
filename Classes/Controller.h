@@ -31,10 +31,10 @@ private:
     double currentTime;
     int totalSwapOperations;
 
-    void addProcess(int pId, int bytes, int totalPages);
-    void swap(int pId);
-    void addToRealMemory(Page &page);
-    void searchProcessPage(int virtualDirection, int pId, bool onlyRead);
+    string addProcess(int pId, int bytes, int totalPages);
+    Page swap(int pId);
+    pair<int, pair<bool, Page>> addToRealMemory(Page &page);
+    string searchProcessPage(int virtualDirection, int pId, bool onlyRead);
     void eliminateProcess();
     void endProcessGroup();
     void comment();
