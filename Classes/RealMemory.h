@@ -13,14 +13,14 @@
 
 using namespace std;
 
-const int len = 128;
+const int real_memory_frames = 128;
 class RealMemory {
 public:
     RealMemory();
     bool insert(Page page, ProcessPaginationTable &paginationTable);
     void erase(Page page, ProcessPaginationTable &paginationTable);
 private:
-    pair<bool,Page> m[len];
+    pair<bool,Page> m[real_memory_frames];
 };
 
 

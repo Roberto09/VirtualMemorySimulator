@@ -12,20 +12,36 @@ void parseData(){
     FifoQueue fifoQueue;
     Controller myControllerFifo(&fifoQueue);
     LRUQueue lruQueue;
-    Controller myControllerLru(&lruQueue);
+    //Controller myControllerLru(&lruQueue);
     ifstream inputFile;
     inputFile.open(nombreArch);
+
+    bool errorOcurred = false;
 
     //read data
     string dataS;
     while(getline(inputFile, dataS)){
         Instruction currInstruction(dataS);
-        // Call the controller's processInstruction function in order to process every instruction and perform necessary actions..
+        if(errorOcurred){
+            if(currInstruction.getType() == 'F') errorOcurred = false, myControllerFifo.resetData();
+            else continue;
+        }
+
         cout << "INPUT: " << dataS << endl;
-        myControllerFifo.processInstruction(currInstruction).outputResult();
-        cout << endl << endl << endl;
-        //cout << myControllerLru.processInstruction(currInstruction)<< " LRU" << endl << endl << endl;
-        if(currInstruction.getType() == 'E') break;
+        Status statusResult = myControllerFifo.processInstruction(currInstruction);
+        if(statusResult.getStatusCode() == s_failure) {
+            cout << "Error fatal:" << endl;
+            statusResult.outputResult();
+            cout << "El programa esperara hasta la siguiente F para continuar con la siguiente ejecucion";
+            cout << endl << endl << endl;
+            errorOcurred = true;
+        }
+
+        else{
+            statusResult.outputResult();
+            cout << endl << endl << endl;
+            if(currInstruction.getType() == 'E') break;
+        }
     }
 
     inputFile.close();

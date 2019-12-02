@@ -23,6 +23,7 @@ class Controller {
 public:
     Controller(ReplacementQueue *rq);
     Status processInstruction(Instruction &instruction);
+    void resetData();
 private:
     /*
      * Main variables, used to coordinate the transactions regarding the processes.
@@ -56,7 +57,6 @@ private:
     void createProcess(int pId, int bytes, int totalPages, double currentTime);
     void endProcess(int pId);
     Process& getProcess(int pId);
-    void resetData();
 };
 
 

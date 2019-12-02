@@ -161,6 +161,17 @@ Status Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRea
  */
 Status Controller::addProcess(int pId, int bytes, int totalPages) {
     Status status;
+
+    // if the total pages is greater than what we can store then there's an error
+    if(totalPages > real_memory_frames){
+        status.setStatusCode(s_failure);
+        status.addStringResult("Los marcos de pagina necesarios para guardar el proceso " + to_string(pId) + " son " +
+        to_string(totalPages) + " pero solamente existen " + to_string(real_memory_frames)
+        + " marcos de pagina en memoria real");
+        // we return the status here since this was wrong
+        return status;
+    }
+
     status.addStringResult("Asignar " + to_string(bytes) + " bytes al proceso " + to_string(pId));
     vector<int> realMemoryFrames; // stores where in real memory the pages of the process ended up.
     vector<Page> swapedPages; // stores the pages that had to be swapped in order to add this process properly.

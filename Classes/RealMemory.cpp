@@ -8,7 +8,7 @@ using namespace std;
 RealMemory::RealMemory() {};
 
 bool RealMemory::insert(Page page, ProcessPaginationTable &paginationTable) {
-    for(int i=0; i<len; i++){
+    for(int i=0; i<real_memory_frames; i++){
         if(!m[i].first){
             m[i].first= true;
             m[i].second = page;
