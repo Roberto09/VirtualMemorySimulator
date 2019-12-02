@@ -29,8 +29,11 @@ Page Controller::swap(int pId) {
     // add such page to secondary memory
     rm.erase(swapPage, ppt);
     sm.insert(swapPage, ppt);
-    // add swap from real memory to secondary memory
+    // add to current time the time it takes to do a swap
     currentTime += d_swap;
+
+    // add the swap to the total swaps
+    totalSwapOperations ++;
     return swapPage;
 }
 
@@ -92,6 +95,10 @@ string Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRea
     Page page(pId, pageNumber);
     // check if page is in secondary memory
     if(this->ppt.isInSecondaryMemory(page)) { // if it isn't then we have to move it to real memory
+        // first a page fault occured so we notify our process about that
+        Process &currProcess = getProcess(pId);
+        currProcess.addPageFault();
+
         // we add to the output where it's currently in secondary memory
         output += "Se localizo la pagina: " + to_string(page.getPageNumber()) + " del proceso " +
                   to_string(page.getIDProcess()) + " que estaba en el marco " +
@@ -104,6 +111,9 @@ string Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRea
 
         // add to current time the time it takes to swap a page from secondary to real memory
         currentTime += d_swap;
+
+        // add the swap to the total swaps
+        totalSwapOperations ++;
 
         // if we had to swap something from real memory to secondary memory we add it to the output
         if (result.second.first) {

@@ -27,8 +27,8 @@ void parseData(){
         else{
             // Call the controller's processInstruction function in order to process every instruction and perform necessary actions..
             cout << "INPUT: " << dataS << endl;
-            // Cout << myControllerFifo.processInstruction(currInstruction)<< " Fifo" << endl << endl << endl;
-            cout << myControllerLru.processInstruction(currInstruction)<< " LRU" << endl << endl << endl;
+            cout << myControllerFifo.processInstruction(currInstruction) << endl << endl << endl;
+            //cout << myControllerLru.processInstruction(currInstruction)<< " LRU" << endl << endl << endl;
         }
     }
 
