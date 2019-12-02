@@ -85,11 +85,28 @@ void Controller::endProcess(int pId) {
 }
 
 /*
+ * This method will be called by generateEndReport() in order to reset the
+ * data structures previously initialized. This will allow the user to enter other inputs.
+ */
+void Controller::resetData()
+{
+    // Re-initialize private variables.
+    this->rm = RealMemory();
+    this->sm = SecondaryMemory();
+    this->ppt = ProcessPaginationTable();
+    this->currentTime = 0.0;
+    this->totalSwapOperations = 0;
+    this->rq->reset();
+
+}
+
+/*
  * Search process page, searches for a virtual direction in real memory, if it's not found then a swap occurs.
  */
-string Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRead) {
-    string output = "Obtener la direccion real correspondiente a la direccion virtual " + to_string(virtualDirection) +
-                    " del proceso " + to_string(pId) + "\n";
+Status Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRead) {
+    Status status;
+    status.addStringResult("Obtener la direccion real correspondiente a la direccion virtual " + to_string(virtualDirection) +
+                    " del proceso " + to_string(pId));
     // create page
     int pageNumber = virtualDirection / page_size;
     Page page(pId, pageNumber);
@@ -100,9 +117,9 @@ string Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRea
         currProcess.addPageFault();
 
         // we add to the output where it's currently in secondary memory
-        output += "Se localizo la pagina: " + to_string(page.getPageNumber()) + " del proceso " +
+        status.addStringResult("Se localizo la pagina: " + to_string(page.getPageNumber()) + " del proceso " +
                   to_string(page.getIDProcess()) + " que estaba en el marco " +
-                  to_string(ppt.getSecondaryPosition(page)) + " del area de swapping";
+                  to_string(ppt.getSecondaryPosition(page)) + " del area de swapping");
         // we remove it form secondary memory
         sm.erase(page, ppt);
 
@@ -118,13 +135,13 @@ string Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRea
         // if we had to swap something from real memory to secondary memory we add it to the output
         if (result.second.first) {
             Page swappedPage = result.second.second;
-            output += "Pagina " + to_string(swappedPage.getPageNumber()) + " swappeada al marco " +
-                      to_string(ppt.getSecondaryPosition(swappedPage)) + "del area de swappping \n";
+            status.addStringResult("Pagina " + to_string(swappedPage.getPageNumber()) + " swappeada al marco " +
+                      to_string(ppt.getSecondaryPosition(swappedPage)) + "del area de swappping");
         }
         // we add to the output the real memory direction where the page ended up at
-        output += "Se cargo la pagina: " + to_string(page.getPageNumber()) + " del proceso " +
+        status.addStringResult("Se cargo la pagina: " + to_string(page.getPageNumber()) + " del proceso " +
                   to_string(page.getIDProcess()) + " a el marco " + to_string(ppt.getRealPosition(page)) +
-                  " de memoria real \n";
+                  " de memoria real");
     }
 
     // add to current time the time it takes to check a page in real memory
@@ -132,9 +149,9 @@ string Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRea
 
     rq->update(page);
     // we add to the output the real direction where our information is now at in real memory
-    output += "Direccion virtual: " + to_string(virtualDirection) + ". Direccion Real: " +
-              to_string(ppt.getRealPosition(page) * page_size + virtualDirection % page_size) + "\n";
-    return output;
+    status.addStringResult("Direccion virtual: " + to_string(virtualDirection) + ". Direccion Real: " +
+              to_string(ppt.getRealPosition(page) * page_size + virtualDirection % page_size));
+    return status;
 }
 
 /*
@@ -142,8 +159,9 @@ string Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRea
  * total number of needed pages. If the process can't be added directly to secondary memory then a swap is triggered
  * to secondary memory
  */
-string Controller::addProcess(int pId, int bytes, int totalPages) {
-    string output = "Asignar " + to_string(bytes) + " bytes al proceso " + to_string(pId) + "\n";
+Status Controller::addProcess(int pId, int bytes, int totalPages) {
+    Status status;
+    status.addStringResult("Asignar " + to_string(bytes) + " bytes al proceso " + to_string(pId));
     vector<int> realMemoryFrames; // stores where in real memory the pages of the process ended up.
     vector<Page> swapedPages; // stores the pages that had to be swapped in order to add this process properly.
     // create simple process
@@ -163,48 +181,36 @@ string Controller::addProcess(int pId, int bytes, int totalPages) {
     }
 
     // add to output all real memory frames
-    output += "Se asignaron los marcos de memoria real: [";
+    string addedFramesString = "";
+    addedFramesString +="Se asignaron los marcos de memoria real: [";
 
-    for(int frame : realMemoryFrames) output += to_string(frame) + ", ";
+    for(int frame : realMemoryFrames) addedFramesString += to_string(frame) + ", ";
 
-    output.pop_back(); output.pop_back(); // we remove the last comma added.
-    output += "]\n";
+    addedFramesString.pop_back(); addedFramesString.pop_back(); // we remove the last comma added.
+    addedFramesString += "]";
+
+    status.addStringResult(addedFramesString);
 
     // add to output the information of all the swaps needed
     if(swapedPages.size() > 0){
-        output += "Paginas swapeadas a area de swapping: \n";
+        status.addStringResult("Paginas swapeadas a area de swapping:");
         //página 5 del proceso 1 swappeada al marco 0 del área de swapping
         for(Page &p : swapedPages){
-            output += "Pagina " + to_string(p.getPageNumber()) + " del proceso " + to_string(p.getIDProcess()) +
+            status.addStringResult("Pagina " + to_string(p.getPageNumber()) + " del proceso " + to_string(p.getIDProcess()) +
                       " en memoria real swappeada al marco " + to_string(ppt.getSecondaryPosition(p)) +
-                      " del area de swapping \n";
+                      " del area de swapping");
         }
     }
 
-    return output;
-}
-
-/*
- * This method will be called by generateEndReport() in order to reset the
- * data structures previously initialized. This will allow the user to enter other inputs.
- */
-void Controller::resetData()
-{
-    // Re-initialize private variables.
-    this->rm = RealMemory();
-    this->sm = SecondaryMemory();
-    this->ppt = ProcessPaginationTable();
-    this->currentTime = 0.0;
-    this->totalSwapOperations = 0;
-    this->rq->reset();
-
+    return status;
 }
 
 /*
  * Erase process method that simlply erases a process and marks it as finished
  */
-string Controller::eraseProcess(int pId) {
-    string output = "Liberar los marcos de pagina ocupados por el proceso " + to_string(pId) + " \n";
+Status Controller::eraseProcess(int pId) {
+    Status status;
+    status.addStringResult("Liberar los marcos de pagina ocupados por el proceso " + to_string(pId));
     vector<int> realMemoryFrames, secondaryMemoryFrames;
     Process pcs = getProcess(pId);
     for (int i = 0; i < pcs.getPages(); i++) {
@@ -224,28 +230,33 @@ string Controller::eraseProcess(int pId) {
     }
 
     if(realMemoryFrames.size() > 0){
-        output += "Se libreraron los marcos de pagina de memoria real: [";
+        string realMemoryFramesString = "";
+        realMemoryFramesString += "Se libreraron los marcos de pagina de memoria real: [";
 
-        for(int frame : realMemoryFrames) output += to_string(frame) + ", ";
+        for(int frame : realMemoryFrames) realMemoryFramesString += to_string(frame) + ", ";
 
-        output.pop_back(); output.pop_back(); // remove last colon from ouput
+        realMemoryFramesString.pop_back(); realMemoryFramesString.pop_back(); // remove last colon from ouput
 
-        output += "] \n";
+        realMemoryFramesString += "]";
+        status.addStringResult(realMemoryFramesString);
     }
 
     if(secondaryMemoryFrames.size() > 0){
-        output += "Se libreraron los marcos de pagina del area de swapping: [";
+        string secondaryMemoryFramesString = "";
+        secondaryMemoryFramesString += "Se libreraron los marcos de pagina del area de swapping: [";
 
-        for(int frame : secondaryMemoryFrames) output += to_string(frame) + ", ";
+        for(int frame : secondaryMemoryFrames) secondaryMemoryFramesString += to_string(frame) + ", ";
 
-        output.pop_back(); output.pop_back(); // remove last colon from ouput
+        secondaryMemoryFramesString.pop_back(); secondaryMemoryFramesString.pop_back(); // remove last colon from ouput
 
-        output += "] \n";
+        secondaryMemoryFramesString += "]";
+
+        status.addStringResult(secondaryMemoryFramesString);
     }
 
     this->ppt.removeProcess(pId);
     endProcess(pId);
-    return output;
+    return status;
 }
 
 /*
@@ -253,9 +264,11 @@ string Controller::eraseProcess(int pId) {
  * ended and the program must show a result of the running statistics.
  * @return output string that will show the report of the program statistics.
  */
-string Controller::generateEndReport(){
-    string output = "Reporte de Salida: \n"; // Initialize the string that will be used for output.
-    output += "Turn around de procesos: \n";
+Status Controller::generateEndReport(){
+
+    Status status;
+    status.addStringResult("Reporte de Salida"); // Initialize the string that will be used for output.
+    status.addStringResult("Turn around de procesos:");
 
     // Initialize average turn around value
     double averageTurnAround = 0;
@@ -264,8 +277,8 @@ string Controller::generateEndReport(){
     for(auto it = proccessHistory.begin(); it != proccessHistory.end(); it++) {
         Process &p = it->second;
         if (!p.isFinished()) p.finishProcess(this->currentTime);
-        output += "El turn around del proceso " + to_string(it->first) + " es " + to_string(p.getTurnAround()) +
-                  " segundos \n";
+        status.addStringResult("El turn around del proceso " + to_string(it->first) + " es " + to_string(p.getTurnAround()) +
+                  " segundos");
         averageTurnAround += p.getTurnAround();
     }
     averageTurnAround/=(double)proccessHistory.size();
@@ -274,26 +287,25 @@ string Controller::generateEndReport(){
     for(auto it = proccessHistory.begin(); it != proccessHistory.end(); it++) {
         Process &p = it->second;
         if (!p.isFinished()) p.finishProcess(this->currentTime);
-        output += "Los page faults del proceso " + to_string(it->first) + " son " + to_string(p.getPagesFault()) +
-                  "\n";
+        status.addStringResult("Los page faults del proceso " + to_string(it->first) + " son " + to_string(p.getPagesFault()));
     }
 
     // Display the average turnaround time.
-    output += "\nAverage Turnaround Time: " + to_string(averageTurnAround) + "\n";
+    status.addStringResult("Average Turnaround Time: " + to_string(averageTurnAround));
 
     // Display the number of swap in swap out operations.
-    output += "\nNumber of Swap In Swap Out Operations: " + to_string(totalSwapOperations)  + "\n";
+    status.addStringResult("Number of Swap In Swap Out Operations: " + to_string(totalSwapOperations));
 
     // Reset the data structures so that new inputs are not affected by previous ones.
     resetData();
-    return output;
+    return status;
 }
 
 /*
  * Simple public process delegator which simply identifies the type of instruction given and triggers the corresponding
  * method.
  */
-string Controller::processInstruction(Instruction &instruction) {
+Status Controller::processInstruction(Instruction &instruction) {
     switch(instruction.getType()) {
         case 'P': { // Initial creation of a process
             int bytes = instruction.getData()[0];
@@ -317,7 +329,9 @@ string Controller::processInstruction(Instruction &instruction) {
         }
 
         case 'C':{ // Create process comment
-            return instruction.getComment();
+            Status status;
+            status.addStringResult(instruction.getComment());
+            return status;
         }
 
         case 'F':{// End process
@@ -325,8 +339,10 @@ string Controller::processInstruction(Instruction &instruction) {
         }
 
         case 'E':{ // Exit program
-            return "Muchas gracias por utilizar nuestro programa.";
+            Status status;
+            status.addStringResult("Muchas gracias por utilizar nuestro programa.");
+            return status;
         }
     }
-    return "";
+    return Status();
 }

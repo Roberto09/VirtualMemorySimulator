@@ -11,6 +11,7 @@
 #include "ReplacementQueue.h"
 #include "FifoQueue.h"
 #include "LRUQueue.h"
+#include "Status.h"
 
 using namespace std;
 
@@ -21,7 +22,7 @@ const int page_size = 16;
 class Controller {
 public:
     Controller(ReplacementQueue *rq);
-    string processInstruction(Instruction &instruction);
+    Status processInstruction(Instruction &instruction);
 private:
     /*
      * Main variables, used to coordinate the transactions regarding the processes.
@@ -42,10 +43,10 @@ private:
     /*
      * Main methods used by the controller, this are the onces being called directly with the data of the instruction.
      */
-    string addProcess(int pId, int bytes, int totalPages);
-    string searchProcessPage(int virtualDirection, int pId, bool onlyRead);
-    string eraseProcess(int pId);
-    string generateEndReport();
+    Status addProcess(int pId, int bytes, int totalPages);
+    Status searchProcessPage(int virtualDirection, int pId, bool onlyRead);
+    Status eraseProcess(int pId);
+    Status generateEndReport();
 
     /*
      * Auxiliary methods used by the main methods in order to fulfill their respective tasks.
