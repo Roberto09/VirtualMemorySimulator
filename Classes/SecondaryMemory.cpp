@@ -16,3 +16,7 @@ void SecondaryMemory::insert(Page page, ProcessPaginationTable &paginationTable)
     }
 
 }
+
+void SecondaryMemory::erase(Page page, ProcessPaginationTable &paginationTable) {
+    m[paginationTable.getRealPosition(page)].first = false;
+}
