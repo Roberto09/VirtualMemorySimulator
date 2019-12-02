@@ -10,7 +10,7 @@ const string nombreArch = "input.txt";
 
 void parseData(){
     Controller myControllerFifo(true);
-    Controller myControllerLru(false);
+    //Controller myControllerLru(false);
     ifstream inputFile;
     inputFile.open(nombreArch);
 
@@ -18,15 +18,13 @@ void parseData(){
     string dataS;
     while(getline(inputFile, dataS)){
         Instruction currInstruction(dataS);
-        if (currInstruction.getType() == 'E')
-        {
+        if (currInstruction.getType() == 'E'){
             cout << "E Muchas gracias por utilizar nuestro programa." << endl;
-            return;
+            break;
         }
-        else
-        {
+        else{
             // Call the controller's processInstruction function in order to process every instruction and perform necessary actions..
-            cout << myControllerLru.processInstruction(currInstruction)<< " LRU" << endl;
+            //cout << myControllerLru.processInstruction(currInstruction)<< " LRU" << endl;
             cout << myControllerFifo.processInstruction(currInstruction)<< " Fifo" << endl;
         }
     }
