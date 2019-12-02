@@ -33,7 +33,8 @@ private:
 
     void addProcess(int pId, int bytes, int totalPages);
     void swap(int pId);
-    void searchProcessPage();
+    void addToRealMemory(Page &page);
+    void searchProcessPage(int virtualDirection, int pId, bool onlyRead);
     void eliminateProcess();
     void endProcessGroup();
     void comment();

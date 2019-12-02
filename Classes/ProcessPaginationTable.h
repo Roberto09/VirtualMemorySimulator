@@ -21,6 +21,7 @@ public:
     int getSecondaryPosition(Page &page);
     void addSecondaryPosition(Page &page, int position);
     bool isInRealMemory(Page &page);
+    bool isInSecondaryMemory(Page &page);
     void createProcess(int pId, int bytes, int pages, double timestamp);
     void removeProcess(int pId);
     Process& getProcess(int pId);

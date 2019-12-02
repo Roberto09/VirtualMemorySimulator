@@ -35,6 +35,11 @@ void ProcessPaginationTable::removeProcess(int pId) {
 bool ProcessPaginationTable::isInRealMemory(Page &page) {
     return table[page.getIDProcess()].getPaginationTable()[page.getPageNumber()].first;
 }
+
+bool ProcessPaginationTable::isInSecondaryMemory(Page &page) {
+    return !table[page.getIDProcess()].getPaginationTable()[page.getPageNumber()].first;
+}
+
 Process& ProcessPaginationTable::getProcess(int pId) {
     return table[pId];
 }

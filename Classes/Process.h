@@ -21,6 +21,7 @@ public:
     Process(int bytes, int pages, double initTimestamp);
     unordered_map<int, pair<bool, int>>& getPaginationTable();
     double getInitTimeStamp();
+    int getPages();
 };
 
 

@@ -17,6 +17,7 @@ Controller::Controller() {
     this->ppt = ProcessPaginationTable();
     this->currentTime = 0.0;
     this->totalSwapOperations = 0;
+    this->queue = FifoQueue();
 }
 
 /*
@@ -30,7 +31,33 @@ void Controller::swap(int pId) {
 }
 
 /*
- * Add proccess method that adds an entire process to real memory given the process id, the bytes it occupies and the
+ * Add to real memory method that tries to add a page to real memory and if it's not possible then it makes a swap
+ * and then adds it.
+ */
+void Controller::addToRealMemory(Page &page) {
+    bool realMemoryInsertionResult = this->rm.insert(page, this->ppt);
+    if(!realMemoryInsertionResult){// there's not enough space in real memory
+        // we should swap a page to secondary memory
+        swap(page.getIDProcess());
+        // we insert page again now that there's enough space
+        this->rm.insert(page, this->ppt);
+    }
+    // we finally add it to the queue
+    queue.insert(page);
+}
+
+void Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRead) {
+    // create page
+    int pageNumber = virtualDirection / page_size;
+    Page page(pId, pageNumber);
+    // check if page is in secondary memory
+    if(this->ppt.isInSecondaryMemory(page)){
+        addToRealMemory(page);
+    }
+}
+
+/*
+ * Add process method that adds an entire process to real memory given the process id, the bytes it occupies and the
  * total number of needed pages. If the process can't be added directly to secondary memory then a swap is triggered
  * to secondary memory
  */
@@ -41,13 +68,8 @@ void Controller::addProcess(int pId, int bytes, int totalPages) {
     for(int i = 0; i < totalPages; i++){
         // create page
         Page currPage(pId, i);
-        bool realMemoryInsertionResult = this->rm.insert(currPage, this->ppt);
-        if(!realMemoryInsertionResult){// there's not enough space in real memory
-            // we should swap a page to secondary memory
-            swap(pId);
-            // we insert page again now that there's enough space
-            this->rm.insert(currPage, this->ppt);
-        }
+        // add page to real memory
+        addToRealMemory(currPage);
     }
 }
 
@@ -143,10 +165,9 @@ string Controller::generateEndReport()
  * method.
  */
 string Controller::processInstruction(Instruction &instruction) {
-    // These cases should print to the console.
-    switch(instruction.getType()){
-        case 'P': // Initial creation of a process
-        {
+
+    switch(instruction.getType()) {
+        case 'P': { // Initial creation of a process
             int bytes = instruction.getData()[0];
             int pId = instruction.getData()[1];
 
@@ -155,7 +176,6 @@ string Controller::processInstruction(Instruction &instruction) {
 
             // add the process
             addProcess(pId, bytes, totalPages);
-
             // Flag: need to add return statement for the output.
             return "P";
         }
@@ -175,8 +195,29 @@ string Controller::processInstruction(Instruction &instruction) {
         case 'E': // create process EXIT
         {
             return ("E Muchas gracias por utilizar nuestro programa.");
-        }
-
+        }break;
+        case 'A':{ // search a page from a given process
+            int virtualDir = instruction.getData()[0];
+            int pId = instruction.getData()[1];
+            bool onlyRead = instruction.getData()[2];
+            searchProcessPage(virtualDir,pId , onlyRead);
+        }break;
+        case 'L': {//Frees a process in real memory and swapping
+            int pId = instruction.getData()[0];
+            Process pcs = ppt.getProcess(pId);
+            for (int i = 0; i < pcs.getPages(); i++) {
+                Page currentPage(pId, i);
+                if (ppt.isInRealMemory(currentPage)) {
+                    rm.erase(currentPage, ppt);
+                } else {
+                    sm.erase(currentPage, ppt);
+                }
+                queue.erase(currentPage);
+                //Falta LRU
+            }
+            ppt.removeProcess(pId);
+        }break;
 
     }
+    return "";
 }
