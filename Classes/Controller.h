@@ -38,6 +38,17 @@ private:
     void endProcessGroup();
     void comment();
     void exitProgram();
+
+    string generateEndReport();
+    void resetData();
+
+    double calculateTurnaroundTime();
+
+    double calculateTurnaroundAverageTime();
+
+    double calculateNumPageFaults();
+
+    double calculateNumOperations();
 };
 
 
