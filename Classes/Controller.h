@@ -12,6 +12,7 @@
 #include "FifoQueue.h"
 #include "LRUQueue.h"
 #include "Status.h"
+#include <map>
 
 using namespace std;
 
@@ -37,7 +38,7 @@ private:
      * Statistic variables, used mainly to compute final statistics: turn around for each process, average turn around,
      * total page faults and total swap-in, swap-out operations.
      */
-    unordered_map<int, Process> proccessHistory;
+    map<int, Process> proccessHistory;
     double currentTime;
     int totalSwapOperations;
 

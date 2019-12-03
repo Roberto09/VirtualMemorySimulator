@@ -6,7 +6,7 @@
 
 SecondaryMemory::SecondaryMemory() {}
 void SecondaryMemory::insert(Page page, ProcessPaginationTable &paginationTable) {
-    for(int i=0; i<total_frames; i++){
+    for(int i=0; i<secondary_memory_frames; i++){
         if(!m[i].first){
             m[i].first = true;
             m[i].second = page;

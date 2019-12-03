@@ -11,7 +11,7 @@ const string nombreArch = "input.txt";
 void parseData(){
     FifoQueue fifoQueue;
     LRUQueue lruQueue;
-    Controller myControllerFifo(&fifoQueue);
+    Controller myControllerFifo(&lruQueue);
     //Controller myControllerLru(&lruQueue);
     ifstream inputFile;
     inputFile.open(nombreArch);
@@ -23,8 +23,12 @@ void parseData(){
     while(getline(inputFile, dataS)){
         Instruction currInstruction(dataS);
         if(errorOcurred){
-            if(currInstruction.getType() == 'F') errorOcurred = false, myControllerFifo.resetData();
-            else continue;
+            if(currInstruction.getType() == 'F'){
+                errorOcurred = false;
+                myControllerFifo.resetData();
+                cout << "INPUT: " << dataS << endl << endl << endl;
+            }
+            continue;
         }
 
         cout << "INPUT: " << dataS << endl;

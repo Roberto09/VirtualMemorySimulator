@@ -10,7 +10,7 @@
 #include "ProcessPaginationTable.h"
 using namespace std;
 
-const int total_frames = 256;
+const int secondary_memory_frames = 256;
 class SecondaryMemory {
     public:
         SecondaryMemory();
@@ -18,7 +18,7 @@ class SecondaryMemory {
         void erase(Page page, ProcessPaginationTable &paginationTable);
 
     private:
-        pair<bool,Page> m[total_frames];
+        pair<bool,Page> m[secondary_memory_frames];
 };
 
 

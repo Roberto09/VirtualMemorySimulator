@@ -14,6 +14,7 @@ Controller::Controller(ReplacementQueue *rq) {
     this->rm = RealMemory();
     this->sm = SecondaryMemory();
     this->ppt = ProcessPaginationTable();
+    this->proccessHistory = map<int, Process>();
     this->currentTime = 0.0;
     this->totalSwapOperations = 0;
     this->rq = rq;
@@ -101,6 +102,7 @@ void Controller::resetData()
     this->rm = RealMemory();
     this->sm = SecondaryMemory();
     this->ppt = ProcessPaginationTable();
+    this->proccessHistory = map<int, Process>();
     this->currentTime = 0.0;
     this->totalSwapOperations = 0;
     this->rq->reset();
@@ -122,7 +124,7 @@ Status Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRea
     }
 
     // check if the requested virtual direction really exists, if not then we generate an error
-    if(virtualDirection > getProcess(pId).getBytes()){
+    if(virtualDirection > getProcess(pId).getBytes() || virtualDirection < 0){
         status.setStatusCode(s_failure);
         status.addStringResult("La direccion virtual " + to_string(virtualDirection) + " del proceso " +
                                to_string(pId) + " no existe ya que solo tiene " + to_string(getProcess(pId).getBytes()) + " direcciones virtuales");
