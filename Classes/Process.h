@@ -34,6 +34,7 @@ public:
     void finishProcess(double currentTimestamp);
     int getPagesFault();
     double getTurnAround();
+    int getBytes();
 };
 
 

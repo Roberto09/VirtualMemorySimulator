@@ -78,6 +78,13 @@ Process& Controller::getProcess(int pId) {
 }
 
 /*
+ * Process exists checks whether a process exists or not in the history of te processes
+ */
+bool Controller::processExists(int pId) {
+    return proccessHistory.count(pId);
+}
+
+/*
  * Ends a process in process history, used for future statistic references
  */
 void Controller::endProcess(int pId) {
@@ -105,10 +112,30 @@ void Controller::resetData()
  */
 Status Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRead) {
     Status status;
+
+    // if the proccess doesn't even exist then there's an error
+    if(!processExists(pId)) {
+        status.setStatusCode(s_failure);
+        status.addStringResult("El proceso con el id " + to_string(pId) + " no existe actualmente");
+        // we return the status here since this was wrong
+        return status;
+    }
+
+    // check if the requested virtual direction really exists, if not then we generate an error
+    if(virtualDirection > getProcess(pId).getBytes()){
+        status.setStatusCode(s_failure);
+        status.addStringResult("La direccion virtual " + to_string(virtualDirection) + " del proceso " +
+                               to_string(pId) + " no existe ya que solo tiene " + to_string(getProcess(pId).getBytes()) + " direcciones virtuales");
+        // we return the status here since this was wrong
+        return status;
+    }
+
     status.addStringResult("Obtener la direccion real correspondiente a la direccion virtual " + to_string(virtualDirection) +
                     " del proceso " + to_string(pId));
+
     // create page
     int pageNumber = virtualDirection / page_size;
+
     Page page(pId, pageNumber);
     // check if page is in secondary memory
     if(this->ppt.isInSecondaryMemory(page)) { // if it isn't then we have to move it to real memory
@@ -161,6 +188,14 @@ Status Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRea
  */
 Status Controller::addProcess(int pId, int bytes, int totalPages) {
     Status status;
+
+    // if there's a process with that id already then there's an error
+    if(processExists(pId)) {
+        status.setStatusCode(s_failure);
+        status.addStringResult("El proceso con el id " + to_string(pId) + " ya existe actualmente y no se puede agregar denuevo");
+        // we return the status here since this was wrong
+        return status;
+    }
 
     // if the total pages is greater than what we can store then there's an error
     if(totalPages > real_memory_frames){
@@ -221,6 +256,15 @@ Status Controller::addProcess(int pId, int bytes, int totalPages) {
  */
 Status Controller::eraseProcess(int pId) {
     Status status;
+
+    // if the proccess doesn't even exist then there's an error
+    if(!processExists(pId)) {
+        status.setStatusCode(s_failure);
+        status.addStringResult("El proceso con el id " + to_string(pId) + " no existe actualmente");
+        // we return the status here since this was wrong
+        return status;
+    }
+
     status.addStringResult("Liberar los marcos de pagina ocupados por el proceso " + to_string(pId));
     vector<int> realMemoryFrames, secondaryMemoryFrames;
     Process pcs = getProcess(pId);

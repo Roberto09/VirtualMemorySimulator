@@ -57,6 +57,7 @@ private:
     void createProcess(int pId, int bytes, int totalPages, double currentTime);
     void endProcess(int pId);
     Process& getProcess(int pId);
+    bool processExists(int pId);
 };
 
 

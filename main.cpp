@@ -10,8 +10,8 @@ const string nombreArch = "input.txt";
 
 void parseData(){
     FifoQueue fifoQueue;
-    Controller myControllerFifo(&fifoQueue);
     LRUQueue lruQueue;
+    Controller myControllerFifo(&fifoQueue);
     //Controller myControllerLru(&lruQueue);
     ifstream inputFile;
     inputFile.open(nombreArch);

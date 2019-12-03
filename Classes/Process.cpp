@@ -28,6 +28,7 @@ bool Process::isFinished() {
 }
 
 void Process::finishProcess(double currentTimestamp) {
+    this->finished = true;
     this->finishTimestamp = currentTimestamp;
 }
 
@@ -37,4 +38,8 @@ int Process::getPagesFault() {
 
 double Process::getTurnAround() {
     return this->finishTimestamp - this->initTimestamp;
+}
+
+int Process::getBytes() {
+    return this->bytes;
 }
