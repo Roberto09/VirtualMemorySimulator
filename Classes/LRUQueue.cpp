@@ -5,6 +5,7 @@
 #include <iostream>
 #include "LRUQueue.h"
 
+// This function is an override to update, it is useful for LRU update on the queue
 void LRUQueue::update(Page page) {
     int toErase;
     for(int i=0; i<queuePages.size(); i++){

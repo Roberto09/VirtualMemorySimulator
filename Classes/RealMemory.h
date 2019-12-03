@@ -20,7 +20,9 @@ public:
     bool insert(Page page, ProcessPaginationTable &paginationTable);
     void erase(Page page, ProcessPaginationTable &paginationTable);
 private:
+    //List of pages inside of the real memory
     pair<bool,Page> m[real_memory_frames];
+
 };
 
 

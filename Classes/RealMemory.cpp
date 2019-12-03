@@ -6,7 +6,7 @@
 using namespace std;
 //Constructor
 RealMemory::RealMemory() {};
-
+//Inserts a page to real memory
 bool RealMemory::insert(Page page, ProcessPaginationTable &paginationTable) {
     for(int i=0; i<real_memory_frames; i++){
         if(!m[i].first){
@@ -18,7 +18,7 @@ bool RealMemory::insert(Page page, ProcessPaginationTable &paginationTable) {
     }
     return false;
 }
-
+// Erase a page from real memory
 void RealMemory::erase(Page page, ProcessPaginationTable &paginationTable) {
     m[paginationTable.getRealPosition(page)].first = false;
 }
