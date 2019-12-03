@@ -402,6 +402,13 @@ Status Controller::processInstruction(Instruction &instruction) {
             status.addStringResult("Muchas gracias por utilizar nuestro programa.");
             return status;
         }
+
+        default :{
+            Status status;
+            status.setStatusCode(s_failure);
+            status.addStringResult("La instruccion " + to_string(instruction.getType()) + " no existe.");
+            return status;
+        }
     }
     return Status();
 }
