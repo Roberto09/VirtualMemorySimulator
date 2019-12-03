@@ -8,7 +8,7 @@
 ReplacementQueue::ReplacementQueue() {
     this ->queuePages = vector <Page>();
 }
-
+// Returns the first page from the queue and erases from it
 Page ReplacementQueue::front(int pId) {
     Page answer;
     int i;
@@ -23,6 +23,7 @@ Page ReplacementQueue::front(int pId) {
     return answer;
 }
 
+//Erases a specific page
 void ReplacementQueue:: erase(Page page){
     int i;
     for (i = queuePages.size()-1; i>= 0; i--) {
@@ -31,11 +32,14 @@ void ReplacementQueue:: erase(Page page){
         }
     }
 }
+//Inserts a page to the queue
 void ReplacementQueue:: insert(Page page){
     queuePages.push_back(page);
 }
+//Updates the queue
 void ReplacementQueue::update(Page page) {}
 
+//Resets the Queue
 void ReplacementQueue:: reset(){
     this ->queuePages = vector <Page>();
 }

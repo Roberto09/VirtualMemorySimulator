@@ -10,7 +10,7 @@
 using  namespace std;
 
 
-
+//This class is for to specify the fifo replacement method. It applies poliformism from Replacement Queue
 class FifoQueue: public ReplacementQueue {
 public:
 };

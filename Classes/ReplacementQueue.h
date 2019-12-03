@@ -18,7 +18,9 @@ public:
      void reset();
 
 protected:
+    //Queue of pages
     vector <Page> queuePages;
+
 };
 
 

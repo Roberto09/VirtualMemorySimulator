@@ -7,6 +7,7 @@
 
 Instruction::Instruction() {}
 
+//In this function we parse a line of data to a instruction
 Instruction::Instruction(string &parseString) {
     this->type = parseString[0];
     int iPos = 2;
@@ -25,15 +26,15 @@ Instruction::Instruction(string &parseString) {
     if(iPos < parseString.length()) this->comment = parseString.substr(iPos);
 }
 
-
+//Gets the type of the instruction
 char Instruction::getType() {
     return this->type;
 }
-
+//Gets the vector data of the instruction
 vector<int>& Instruction::getData() {
     return this->data;
 }
-
+//Gets a string comment from the instruction
 string& Instruction::getComment() {
     return this->comment;
 }

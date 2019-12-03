@@ -3,8 +3,10 @@
 //
 
 #include "SecondaryMemory.h"
-
+//Constructor
 SecondaryMemory::SecondaryMemory() {}
+
+//Inserts a page in secondary memory
 void SecondaryMemory::insert(Page page, ProcessPaginationTable &paginationTable) {
     for(int i=0; i<secondary_memory_frames; i++){
         if(!m[i].first){
@@ -16,7 +18,7 @@ void SecondaryMemory::insert(Page page, ProcessPaginationTable &paginationTable)
     }
 
 }
-
+//Erases a page in secondary memory
 void SecondaryMemory::erase(Page page, ProcessPaginationTable &paginationTable) {
     m[paginationTable.getSecondaryPosition(page)].first = false;
 }

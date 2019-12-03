@@ -9,12 +9,12 @@
 #include <string>
 
 using namespace std;
-
+//This class is for having better control of instructions
 class Instruction {
 private:
-    char type;
-    vector<int> data;
-    string comment;
+    char type; // the type of instruction to do
+    vector<int> data; // the data recived
+    string comment; // Any special comment recieved
 public:
     Instruction();
     Instruction(string &parseString);

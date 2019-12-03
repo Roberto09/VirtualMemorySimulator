@@ -18,6 +18,7 @@ class SecondaryMemory {
         void erase(Page page, ProcessPaginationTable &paginationTable);
 
     private:
+    //List of pages in secondary memory
         pair<bool,Page> m[secondary_memory_frames];
 };
 
