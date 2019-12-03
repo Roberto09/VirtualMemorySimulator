@@ -5,42 +5,80 @@ using namespace std;
 #include "Classes/Controller.h"
 
 
-const string nombreArch = "input.txt";
+string nombreArch;
+string algorithmToUse;
+
+void askUserData(){
+    // Welcome to user and ask for algorithm to use
+    cout << "Bienvenido al simulador de memoria viritual!" << endl;
+    cout << "Por el momento solo contamos con los algoritmos de remplazo: LRU y FIFO" << endl;
+    cout << "Escribe el algoritmo de remplazo que deseas usar e.j. LRU" << endl;
+
+    cin >> algorithmToUse;
+
+    while(algorithmToUse != "LRU" && algorithmToUse != "FIFO"){
+        cout << "Lo sentimos, ese no es un algoritmo valido. Por favor ingresa LRU o FIFO" << endl;
+        cin >> algorithmToUse;
+    }
+    cout << "Se usara: " << algorithmToUse << endl;
+
+
+    // Ask the user for the input file
+    cout << "Agrega un archivo al folder de este programa con las instrucciones a simular y dinos su nombre: ";
+    cin >> nombreArch;
+}
 
 
 void parseData(){
-    FifoQueue fifoQueue;
-    LRUQueue lruQueue;
-    Controller myControllerFifo(&lruQueue);
-    //Controller myControllerLru(&lruQueue);
+    // variables needed to parse data, which are queue
+    Controller myController;
+
+    // setup controller according to the selected algorithm
+    if(algorithmToUse == "LRU"){
+        LRUQueue lruQueue;
+        myController = Controller(&lruQueue);
+    }
+    else if(algorithmToUse == "FIFO"){
+        FifoQueue fifoQueue;
+        myController = Controller(&fifoQueue);
+    }
+
+    // open given file
     ifstream inputFile;
     inputFile.open(nombreArch);
 
+    // errorOcurred variable which stores if the current set of instructions failed due to an input error
     bool errorOcurred = false;
-
     //read data
     string dataS;
     while(getline(inputFile, dataS)){
+        // parse the instruction
         Instruction currInstruction(dataS);
+
+        // if there's an error we wait until the next F instruction
         if(errorOcurred){
             if(currInstruction.getType() == 'F'){
                 errorOcurred = false;
-                myControllerFifo.resetData();
+                myController.resetData();
                 cout << "INPUT: " << dataS << endl << endl << endl;
             }
             continue;
         }
 
+        // if there's not an error then we process the instruction
         cout << "INPUT: " << dataS << endl;
-        Status statusResult = myControllerFifo.processInstruction(currInstruction);
+        Status statusResult = myController.processInstruction(currInstruction);
+
+        // if there's a failure then we let the user know about it
         if(statusResult.getStatusCode() == s_failure) {
             cout << "Error fatal:" << endl;
             statusResult.outputResult();
-            cout << "El programa esperara hasta la siguiente F para continuar con la siguiente ejecucion";
+            cout << "El programa esperara hasta la siguiente F para continuar con el siguiente grupo de instrucciones";
             cout << endl << endl << endl;
             errorOcurred = true;
         }
 
+        // if there's not a failure we output the result of the instruction
         else{
             statusResult.outputResult();
             cout << endl << endl << endl;
@@ -48,10 +86,15 @@ void parseData(){
         }
     }
 
+    // close given file
     inputFile.close();
 }
 
 int main(){
+    // ask the user for basic data to execute the program
+    askUserData();
+
+    // parse the instructions given
     parseData();
     return 0;
 }

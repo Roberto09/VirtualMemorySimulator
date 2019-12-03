@@ -22,6 +22,7 @@ const int page_size = 16;
 
 class Controller {
 public:
+    Controller();
     Controller(ReplacementQueue *rq);
     Status processInstruction(Instruction &instruction);
     void resetData();

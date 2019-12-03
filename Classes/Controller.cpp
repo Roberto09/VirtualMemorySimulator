@@ -20,6 +20,8 @@ Controller::Controller(ReplacementQueue *rq) {
     this->rq = rq;
 }
 
+Controller::Controller() {}
+
 /*
  * Swap method that swaps a page from real memory to secondary memory (in order to generate space) according to the
  * replacement queue specified in the contruction.
