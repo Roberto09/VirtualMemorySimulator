@@ -11,7 +11,7 @@ Instruction::Instruction(string &parseString) {
     this->type = parseString[0];
     int iPos = 2;
     int niPos;
-    while(iPos < parseString.length() && parseString[iPos] >= '0' && parseString[iPos] <= '9'){
+    while(iPos < parseString.length() && ((parseString[iPos] >= '0' && parseString[iPos] <= '9') || parseString[iPos] == '-')){
         niPos = parseString.find(' ', iPos);
         niPos = (niPos == string::npos ? parseString.length() : niPos);
         this->data.push_back(stol(parseString.substr(iPos, niPos)));
