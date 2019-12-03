@@ -201,8 +201,8 @@ Status Controller::addProcess(int pId, int bytes, int totalPages) {
         return status;
     }
 
-    // if the total pages is greater than what we can store then there's an error
-    if(totalPages > real_memory_frames){
+    // if the total pages is greater than what we can store or they are <= 0 then there's an error
+    if(totalPages > real_memory_frames || totalPages <= 0){
         status.setStatusCode(s_failure);
         status.addStringResult("Los marcos de pagina necesarios para guardar el proceso " + to_string(pId) + " son " +
         to_string(totalPages) + " pero solamente existen " + to_string(real_memory_frames)
@@ -256,7 +256,7 @@ Status Controller::addProcess(int pId, int bytes, int totalPages) {
 }
 
 /*
- * Erase process method that simlply erases a process and marks it as finished
+ * Erase process method that simply erases a process and marks it as finished
  */
 Status Controller::eraseProcess(int pId) {
     Status status;
