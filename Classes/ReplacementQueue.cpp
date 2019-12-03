@@ -13,10 +13,10 @@ Page ReplacementQueue::front(int pId) {
     Page answer;
     int i;
     for(i = 0; i < queuePages.size(); i++){
-        if (queuePages.at(i).getIDProcess() != pId){
+        //if (queuePages.at(i).getIDProcess() != pId){
             answer = queuePages[i];
             break;
-        }
+        //}
     }
     // Assuming that every process could fit in real memory this works
     queuePages.erase(queuePages.begin()+i);

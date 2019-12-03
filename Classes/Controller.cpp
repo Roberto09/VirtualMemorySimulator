@@ -166,8 +166,8 @@ Status Controller::searchProcessPage(int virtualDirection, int pId, bool onlyRea
         // if we had to swap something from real memory to secondary memory we add it to the output
         if (result.second.first) {
             Page swappedPage = result.second.second;
-            status.addStringResult("Pagina " + to_string(swappedPage.getPageNumber()) + " swappeada al marco " +
-                      to_string(ppt.getSecondaryPosition(swappedPage)) + "del area de swappping");
+            status.addStringResult("Pagina " + to_string(swappedPage.getPageNumber()) + " del proceso " + to_string(swappedPage.getIDProcess()) + " swappeada al marco " +
+                      to_string(ppt.getSecondaryPosition(swappedPage)) + " del area de swappping");
         }
         // we add to the output the real memory direction where the page ended up at
         status.addStringResult("Se cargo la pagina: " + to_string(page.getPageNumber()) + " del proceso " +
@@ -262,7 +262,7 @@ Status Controller::eraseProcess(int pId) {
     Status status;
 
     // if the proccess doesn't even exist then there's an error
-    if(!processExists(pId)) {
+    if(!processExists(pId) || getProcess(pId).isFinished()) {
         status.setStatusCode(s_failure);
         status.addStringResult("El proceso con el id " + to_string(pId) + " no existe actualmente");
         // we return the status here since this was wrong
@@ -335,7 +335,7 @@ Status Controller::generateEndReport(){
     // Calculate average turn around while adding to the ouput the individual turn around of each process
     for(auto it = proccessHistory.begin(); it != proccessHistory.end(); it++) {
         Process &p = it->second;
-        if (!p.isFinished()) p.finishProcess(this->currentTime);
+        if (!p.isFinished()) eraseProcess(it->first);
         status.addStringResult("El turn around del proceso " + to_string(it->first) + " es " + to_string(p.getTurnAround()) +
                   " segundos");
         averageTurnAround += p.getTurnAround();
@@ -345,7 +345,6 @@ Status Controller::generateEndReport(){
     // Add to output the page faults per process
     for(auto it = proccessHistory.begin(); it != proccessHistory.end(); it++) {
         Process &p = it->second;
-        if (!p.isFinished()) p.finishProcess(this->currentTime);
         status.addStringResult("Los page faults del proceso " + to_string(it->first) + " son " + to_string(p.getPagesFault()));
     }
 
