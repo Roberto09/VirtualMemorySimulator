@@ -2,6 +2,7 @@
 // Created by rober on 26/11/2019.
 //
 
+#include <iostream>
 #include "Instruction.h"
 
 Instruction::Instruction() {}
@@ -10,7 +11,11 @@ Instruction::Instruction(string &parseString) {
     this->type = parseString[0];
     int iPos = 2;
     int niPos;
-    while(iPos < parseString.length() && ((parseString[iPos] >= '0' && parseString[iPos] <= '9') || parseString[iPos] == '-')){
+    while(iPos < parseString.length() && ((parseString[iPos] >= '0' && parseString[iPos] <= '9') || parseString[iPos] == '-' || parseString[iPos] == ' ')){
+        if(parseString[niPos] == ' '){
+            niPos ++;
+            continue;
+        }
         niPos = parseString.find(' ', iPos);
         niPos = (niPos == string::npos ? parseString.length() : niPos);
         this->data.push_back(stol(parseString.substr(iPos, niPos)));
