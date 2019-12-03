@@ -360,12 +360,23 @@ Status Controller::generateEndReport(){
 }
 
 /*
+ * Wrong Instruction Format error that returns a status when an instruction has the wrong format
+ */
+Status Controller::wrongIntructionFormat() {
+    Status status;
+    status.setStatusCode(s_failure);
+    status.addStringResult("La instruccion no tiene el formato correcto.");
+    return status;
+}
+
+/*
  * Simple public process delegator which simply identifies the type of instruction given and triggers the corresponding
  * method.
  */
 Status Controller::processInstruction(Instruction &instruction) {
     switch(instruction.getType()) {
         case 'P': { // Initial creation of a process
+            if(instruction.getData().size() < 2) return wrongIntructionFormat();
             int bytes = instruction.getData()[0];
             int pId = instruction.getData()[1];
 
@@ -375,6 +386,7 @@ Status Controller::processInstruction(Instruction &instruction) {
         }
 
         case 'A':{ // Search a page from a given process
+            if(instruction.getData().size() < 3) return wrongIntructionFormat();
             int virtualDir = instruction.getData()[0];
             int pId = instruction.getData()[1];
             bool onlyRead = instruction.getData()[2];
@@ -382,6 +394,7 @@ Status Controller::processInstruction(Instruction &instruction) {
         }
 
         case 'L': { //Frees a process in real memory and swapping
+            if(instruction.getData().size() < 1) return wrongIntructionFormat();
             int pId = instruction.getData()[0];
             return eraseProcess(pId);
         }

@@ -60,6 +60,7 @@ private:
     void endProcess(int pId);
     Process& getProcess(int pId);
     bool processExists(int pId);
+    Status wrongIntructionFormat();
 };
 
 

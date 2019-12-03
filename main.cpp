@@ -47,23 +47,11 @@ void parseData(){
     ifstream inputFile;
     inputFile.open(nombreArch);
 
-    // errorOcurred variable which stores if the current set of instructions failed due to an input error
-    bool errorOcurred = false;
     //read data
     string dataS;
     while(getline(inputFile, dataS)){
         // parse the instruction
         Instruction currInstruction(dataS);
-
-        // if there's an error we wait until the next F instruction
-        if(errorOcurred){
-            if(currInstruction.getType() == 'F'){
-                errorOcurred = false;
-                myController.resetData();
-                cout << "INPUT: " << dataS << endl << endl << endl;
-            }
-            continue;
-        }
 
         // if there's not an error then we process the instruction
         cout << "INPUT: " << dataS << endl;
@@ -71,11 +59,9 @@ void parseData(){
 
         // if there's a failure then we let the user know about it
         if(statusResult.getStatusCode() == s_failure) {
-            cout << "Error fatal:" << endl;
+            cout << "Error fatal, se saltara a la siguiente instruccion:" << endl;
             statusResult.outputResult();
-            cout << "El programa esperara hasta la siguiente F para continuar con el siguiente grupo de instrucciones";
             cout << endl << endl << endl;
-            errorOcurred = true;
         }
 
         // if there's not a failure we output the result of the instruction
