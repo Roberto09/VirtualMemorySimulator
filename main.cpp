@@ -72,6 +72,10 @@ void parseData(){
         }
     }
 
+    string exit;
+    cout << "Escriba lo que sea para salir" << endl;
+    cin >> exit;
+
     // close given file
     inputFile.close();
 }
